@@ -1,6 +1,9 @@
 const ethers = require('ethers')
 
-provider = new AlchemyProvider("kovan", process.env.API_KEY);
+const provider = new ethers.providers.AlchemyProvider("kovan", process.env.API_KEY);
+console.log(provider)
+const wallet = new ethers.Wallet(process.PRIVATE_KEY, provider)
+console.log(wallet)
 
 export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true)
