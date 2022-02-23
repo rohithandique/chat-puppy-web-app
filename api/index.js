@@ -1,11 +1,13 @@
 const ethers = require('ethers')
+const nft_core_abi = require('./_abi.json')
 
+const NFT_core_contract_address = "0xAb50F84DC1c8Ef1464b6F29153E06280b38fA754"
 const provider = new ethers.providers.AlchemyProvider("kovan", process.env.API_KEY);
-console.log(provider)
-const wallet = new ethers.Wallet(process.PRIVATE_KEY, provider)
-console.log(wallet)
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+const NFTCoreConnectedContract = new ethers.Contract(NFT_core_contract_address, nft_core_abi, wallet);
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
+
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*')
     // another common pattern
@@ -15,8 +17,31 @@ export default function handler(req, res) {
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
-    res.json({"name": "Cryptopunks"+1,
-    "description": "A highly acclaimed collection of punks.", 
-    "image": "https://www.larvalabs.com/cryptopunks/cryptopunk"+1+".png",
-    "api_key": process.env.API_KEY});
+
+    const id = req.query.id;
+    let metadata;
+    let _artifacts
+    try {
+        metadata = await NFTCoreConnectedContract.tokenMetaData(parseInt(id));
+        _artifacts = parseInt(metadata["_artifacts"]["_hex"], 16)
+    } catch(err) {
+        console.log(err)
+    }
+    
+    if(_artifacts===0) {
+        res.json({
+            "minted": "false",
+            "unboxed": "false"
+        })
+    } else if(_artifacts===1) {
+        res.json({
+            "minted":"true",
+            "unboxed": "false"
+        })
+    } else {
+        res.json({
+            "minted": "true",
+            "unboxed": "true", 
+        });
+    }
 };
