@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import {
     Box, Stack, Heading, Text, Container, Button, SimpleGrid, 
     useBreakpointValue, Icon, useNumberInput, useColorModeValue,
@@ -5,11 +6,19 @@ import {
     ModalCloseButton, useDisclosure
 } from '@chakra-ui/react';
 import MintModal from './MintModal';
+import { ethers } from 'ethers';
+import nft_manager_abi from "abi/nft_manager_abi"
 
 export default function MintGrid() {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const NFT_manager_contract_address = "0x0528E41841b8BEdD4293463FAa061DdFCC5E41bd"
 
+    const [ boxPrice, setBoxPrice ] = useState()
+
+    /*
+    in case we need to do buyAndMintBatch(amount)
+    */
     const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
     useNumberInput({
       step: 1,
@@ -21,8 +30,37 @@ export default function MintGrid() {
 
     const inc = getIncrementButtonProps()
     const dec = getDecrementButtonProps()
-    console.log(inc, dec)
+    console.log(inc, dec) 
     const input = getInputProps({ isReadOnly: false })
+
+    const getBoxPrice = async() => {
+        try {
+            const { ethereum } = window; //injected by metamask
+            //connect to an ethereum node
+            const provider = new ethers.providers.Web3Provider(ethereum); 
+            //gets the account
+            const signer = provider.getSigner(); 
+            //connects with the contract
+            const NFTManagerConnectedContract = new ethers.Contract(NFT_manager_contract_address, nft_manager_abi, signer);
+            const _boxPrice = await NFTManagerConnectedContract.boxPrice();
+            setBoxPrice(parseInt(_boxPrice["_hex"], 16)/ Math.pow(10, 18))
+        } catch(err) {
+            console.log(err)
+        }  
+    }
+
+    useEffect(() => {
+        let isConnected = false;
+
+        if(!isConnected) {
+            getBoxPrice()
+        }
+
+        return () => {
+            isConnected = true;
+        }
+    }, [])
+    
 
 return (
     <Box position={'relative'}>
@@ -53,7 +91,7 @@ return (
                     !
                 </Text>
                 </Heading>
-                <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+                <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }} textAlign="left">
                 Acquire NFTs for avatar in ChatPuppy, with which you can get premium access to ChatPuppy's exclusive features!
                 </Text>
             </Stack>
@@ -102,13 +140,13 @@ return (
                 </Button>
             </Box>
             <Stack spacing={2}>
-            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }} textAlign="left">
             &#9900; You can only mint a mystery avatar or mint &#38; unbox simultaneously. 
             </Text>
-            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }} textAlign="left">
             &#9900; If you only mint, you will not know what the exact avatar is until it is unboxed.
             </Text>
-            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
+            <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }} textAlign="left">
             &#9900; The mystery avatars and NFTs are all available for selling.
             </Text>
             </Stack>
@@ -126,7 +164,7 @@ return (
           <ModalHeader>Confirmation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <MintModal count={input.value}/>
+            <MintModal count={input.value} boxPrice={boxPrice}/>
           </ModalBody>
         </ModalContent>
     </Modal>

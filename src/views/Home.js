@@ -6,8 +6,9 @@ import Mail from 'components/home/Mail';
 import FeaturesLeftRight from 'components/home/FeaturesLeftRight';
 import FeaturesBox from 'components/home/FeaturesBox';
 import SupportedNetworks from 'components/home/SupportedNetworks';
-import Roadmap from "assets/roadmap.png"
-import { Center, Image, chakra, useColorModeValue } from '@chakra-ui/react';
+import RoadmapDark from "assets/roadmap_dark.jpg"
+import RoadmapLight from "assets/roadmap_light.jpg"
+import { Box, Center, Image, chakra, useColorModeValue } from '@chakra-ui/react';
 
 export default function Home() {
   return (
@@ -28,7 +29,15 @@ export default function Home() {
                 ROADMAP
           </chakra.p>
         </Center>
-        <Image w="100vw" src={Roadmap} />
+        <Box
+          shadow="xl"
+          rounded="xl"
+        >
+        <Image 
+          w="100vw"
+          src={useColorModeValue(RoadmapLight, RoadmapDark)}
+        />
+        </Box>
         <Mail />
         <Footer />
     </>

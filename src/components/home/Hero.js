@@ -4,6 +4,7 @@ import {
   Text, Icon, Link
 } from "@chakra-ui/react";
 import Design1 from "assets/design1.png"
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const Hero = () => {
   return (
@@ -43,9 +44,9 @@ const Hero = () => {
               backgroundColor: "brand.200"
             }}
           >
-            <Link href='http://test.chatpuppy.com:9200' isExternal
+            <Link href='http://test.puppy.chat:9200' isExternal
               style={{textDecoration: 'none'}}>
-              Go To App 
+              Demo
               <Icon boxSize={4} ml={1} viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fillRule="evenodd"
@@ -56,10 +57,10 @@ const Hero = () => {
             </Link>
           </Button>
           <Button
-            as="a" href="#mail" variant="solid" display="inline-flex" alignItems="center" justifyContent="center"
-            w={{ base: "full", sm: "auto" }} mb={{ base: 2, sm: 0 }} size="lg" cursor="pointer"
+            as="a" href="https://discord.gg/QN658sJWkk" target="_blank" variant="solid" display="inline-flex" alignItems="center" justifyContent="center"
+            w={{ base: "full", sm: "auto" }} mb={{ base: 2, sm: 0 }} size="lg" cursor="pointer" rightIcon={<ExternalLinkIcon />}
           >
-            Subscribe
+            Discord
           </Button>
         </Stack>
       </Box>
